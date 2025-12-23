@@ -128,7 +128,7 @@ async function startReveal() {
   }
 
   displayPodium(rankings);
-  
+
   backBtn.classList.remove("hidden");
   categoryName.classList.remove("hidden");
   categoryName.classList.add("small");
@@ -163,16 +163,16 @@ function revealWinner(rank, name, stats, className) {
 function displayPodium(rankings) {
   const display = document.getElementById("winner-display");
   const top3 = rankings.slice(0, 3);
-  
+
   let podiumHTML = '<div class="podium-container">';
-  
+
   top3.forEach((ranking, index) => {
     const [name, stats] = ranking;
-    const classes = ['top1', 'top2', 'top3'];
-    const ranks = ['TOP 1', 'TOP 2', 'TOP 3'];
+    const classes = ["top1", "top2", "top3"];
+    const ranks = ["TOP 1", "TOP 2", "TOP 3"];
     const className = classes[index];
     const rank = ranks[index];
-    
+
     podiumHTML += `
       <div class="podium-item">
         <div class="podium-rank ${className}">${rank}</div>
@@ -185,8 +185,8 @@ function displayPodium(rankings) {
       </div>
     `;
   });
-  
-  podiumHTML += '</div>';
+
+  podiumHTML += "</div>";
   display.innerHTML = podiumHTML;
 }
 

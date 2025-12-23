@@ -75,9 +75,14 @@ function calculateStats() {
     (a, b) => b[1].medals - a[1].medals
   )[0];
 
-  const leastMedals = Object.entries(participantStats)
-    .filter(([_, stats]) => stats.medals > 0)
-    .sort((a, b) => a[1].medals - b[1].medals)[0];
+  const leastMedals = Object.entries(participantStats).sort(
+    (a, b) => a[1].medals - b[1].medals
+  );
+
+  const minMedals = leastMedals[0][1].medals;
+  const leastMedalsPlayers = leastMedals.filter(
+    ([_, stats]) => stats.medals === minMedals
+  );
 
   const mostPoints = Object.entries(participantStats).sort(
     (a, b) => b[1].points - a[1].points
@@ -88,7 +93,12 @@ function calculateStats() {
     .sort((a, b) => a[1].points - b[1].points)[0];
 
   let biggestVictory = { category: "", name: "", points: 0, margin: 0 };
-  let smallestVictory = { category: "", name: "", points: 0, margin: Infinity };
+  let smallestVictory = {
+    category: "",
+    name: "",
+    points: Infinity,
+    totalPoints: Infinity,
+  };
 
   Object.entries(awardsData).forEach(([category, data]) => {
     if (data.rankings.length >= 2) {
@@ -104,33 +114,33 @@ function calculateStats() {
         };
       }
 
-      if (margin < smallestVictory.margin) {
+      if (first[1].total_points < smallestVictory.totalPoints) {
         smallestVictory = {
           category,
           name: first[0],
           points: first[1].total_points,
-          margin,
+          totalPoints: first[1].total_points,
         };
       }
     }
   });
 
-  let tightestTop = { category: "", margin: Infinity };
-  let loosestTop = { category: "", margin: 0 };
+  let tightestTop = { category: "", avgGap: Infinity };
+  let loosestTop = { category: "", avgGap: 0 };
 
   Object.entries(awardsData).forEach(([category, data]) => {
     if (data.rankings.length >= 3) {
       const topThree = data.rankings.slice(0, 3);
-      const maxPoints = topThree[0][1].total_points;
-      const minPoints = topThree[2][1].total_points;
-      const margin = maxPoints - minPoints;
+      const gap1to2 = topThree[0][1].total_points - topThree[1][1].total_points;
+      const gap2to3 = topThree[1][1].total_points - topThree[2][1].total_points;
+      const avgGap = (gap1to2 + gap2to3) / 2;
 
-      if (margin < tightestTop.margin) {
-        tightestTop = { category, margin };
+      if (avgGap < tightestTop.avgGap) {
+        tightestTop = { category, avgGap };
       }
 
-      if (margin > loosestTop.margin) {
-        loosestTop = { category, margin };
+      if (avgGap > loosestTop.avgGap) {
+        loosestTop = { category, avgGap };
       }
     }
   });
@@ -140,7 +150,7 @@ function calculateStats() {
     leastNominated,
     top1Royal,
     mostMedals,
-    leastMedals,
+    leastMedalsPlayers,
     mostPoints,
     leastPoints,
     biggestVictory,
@@ -162,14 +172,18 @@ function displayStats() {
           <div class="stat-icon">🌟</div>
           <div class="stat-label">Le plus nommé</div>
           <div class="stat-value">${stats.mostNominated[0]}</div>
-          <div class="stat-detail">${stats.mostNominated[1].nominations} nominations</div>
+          <div class="stat-detail">${
+            stats.mostNominated[1].nominations
+          } nominations</div>
         </div>
 
         <div class="stat-card">
           <div class="stat-icon">💤</div>
           <div class="stat-label">Le moins nommé</div>
           <div class="stat-value">${stats.leastNominated[0]}</div>
-          <div class="stat-detail">${stats.leastNominated[1].nominations} nominations</div>
+          <div class="stat-detail">${
+            stats.leastNominated[1].nominations
+          } nominations</div>
         </div>
 
         <div class="stat-card highlight">
@@ -189,8 +203,12 @@ function displayStats() {
         <div class="stat-card">
           <div class="stat-icon">🥉</div>
           <div class="stat-label">Le plus petit nombre de médailles</div>
-          <div class="stat-value">${stats.leastMedals[0]}</div>
-          <div class="stat-detail">${stats.leastMedals[1].medals} médailles</div>
+          <div class="stat-value">${stats.leastMedalsPlayers
+            .map((p) => p[0])
+            .join(" & ")}</div>
+          <div class="stat-detail">${
+            stats.leastMedalsPlayers[0][1].medals
+          } médailles</div>
         </div>
 
         <div class="stat-card">
@@ -211,28 +229,36 @@ function displayStats() {
           <div class="stat-icon">🚀</div>
           <div class="stat-label">La plus grosse victoire</div>
           <div class="stat-value">${stats.biggestVictory.name}</div>
-          <div class="stat-detail">${stats.biggestVictory.category} (+${stats.biggestVictory.margin} pts)</div>
+          <div class="stat-detail">${stats.biggestVictory.category} (${
+    stats.biggestVictory.points
+  } pts)</div>
         </div>
 
         <div class="stat-card">
           <div class="stat-icon">😅</div>
           <div class="stat-label">La plus petite victoire</div>
           <div class="stat-value">${stats.smallestVictory.name}</div>
-          <div class="stat-detail">${stats.smallestVictory.category} (+${stats.smallestVictory.margin} pts)</div>
+          <div class="stat-detail">${stats.smallestVictory.category} (${
+    stats.smallestVictory.points
+  } pts)</div>
         </div>
 
         <div class="stat-card">
           <div class="stat-icon">🔥</div>
           <div class="stat-label">Le Top le plus serré</div>
           <div class="stat-value">${stats.tightestTop.category}</div>
-          <div class="stat-detail">Écart de ${stats.tightestTop.margin} pts</div>
+          <div class="stat-detail">Écart moyen de ${Math.round(
+            stats.tightestTop.avgGap
+          )} pts</div>
         </div>
 
         <div class="stat-card">
           <div class="stat-icon">📊</div>
           <div class="stat-label">Le Top le moins serré</div>
           <div class="stat-value">${stats.loosestTop.category}</div>
-          <div class="stat-detail">Écart de ${stats.loosestTop.margin} pts</div>
+          <div class="stat-detail">Écart moyen de ${Math.round(
+            stats.loosestTop.avgGap
+          )} pts</div>
         </div>
       </div>
 
