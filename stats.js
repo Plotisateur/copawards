@@ -1,92 +1,134 @@
 function calculateStats() {
-  const participants = ['Aloïs', 'Damien', 'Dylan', 'Flo', 'Hubert', 'Jonathan', 'Julia', 'Lodu', 'Momo', 'PA', 'Sachin', 'Seb', 'Skander', 'Stan', 'Thibaud', 'Thomas', 'Willy', 'Yoan', 'Youcef'];
-  
+  const participants = [
+    "Aloïs",
+    "Damien",
+    "Dylan",
+    "Flo",
+    "Hubert",
+    "Jonathan",
+    "Julia",
+    "Lodu",
+    "Momo",
+    "PA",
+    "Sachin",
+    "Seb",
+    "Skander",
+    "Stan",
+    "Thibaud",
+    "Thomas",
+    "Willy",
+    "Yoan",
+    "Youcef",
+  ];
+
   const participantStats = {};
-  participants.forEach(p => {
+  participants.forEach((p) => {
     participantStats[p] = {
       nominations: 0,
       medals: 0,
       points: 0,
       top1: 0,
-      categories: []
+      categories: [],
     };
   });
 
   Object.entries(awardsData).forEach(([category, data]) => {
-    data.nominees.forEach(nominee => {
+    data.nominees.forEach((nominee) => {
       participantStats[nominee].nominations++;
     });
 
     data.rankings.forEach(([name, stats], index) => {
       participantStats[name].points += stats.total_points;
-      
+
       if (index === 0) {
         participantStats[name].top1++;
         participantStats[name].medals++;
-        participantStats[name].categories.push({ category, rank: 1, points: stats.total_points });
+        participantStats[name].categories.push({
+          category,
+          rank: 1,
+          points: stats.total_points,
+        });
       } else if (index === 1 || index === 2) {
         participantStats[name].medals++;
-        participantStats[name].categories.push({ category, rank: index + 1, points: stats.total_points });
+        participantStats[name].categories.push({
+          category,
+          rank: index + 1,
+          points: stats.total_points,
+        });
       }
     });
   });
 
-  const mostNominated = Object.entries(participantStats)
-    .sort((a, b) => b[1].nominations - a[1].nominations)[0];
+  const mostNominated = Object.entries(participantStats).sort(
+    (a, b) => b[1].nominations - a[1].nominations
+  )[0];
 
   const leastNominated = Object.entries(participantStats)
     .filter(([_, stats]) => stats.nominations > 0)
     .sort((a, b) => a[1].nominations - b[1].nominations)[0];
 
-  const top1Royal = Object.entries(participantStats)
-    .sort((a, b) => b[1].top1 - a[1].top1)[0];
+  const top1Royal = Object.entries(participantStats).sort(
+    (a, b) => b[1].top1 - a[1].top1
+  )[0];
 
-  const mostMedals = Object.entries(participantStats)
-    .sort((a, b) => b[1].medals - a[1].medals)[0];
+  const mostMedals = Object.entries(participantStats).sort(
+    (a, b) => b[1].medals - a[1].medals
+  )[0];
 
   const leastMedals = Object.entries(participantStats)
     .filter(([_, stats]) => stats.medals > 0)
     .sort((a, b) => a[1].medals - b[1].medals)[0];
 
-  const mostPoints = Object.entries(participantStats)
-    .sort((a, b) => b[1].points - a[1].points)[0];
+  const mostPoints = Object.entries(participantStats).sort(
+    (a, b) => b[1].points - a[1].points
+  )[0];
 
   const leastPoints = Object.entries(participantStats)
     .filter(([_, stats]) => stats.points > 0)
     .sort((a, b) => a[1].points - b[1].points)[0];
 
-  let biggestVictory = { category: '', name: '', points: 0, margin: 0 };
-  let smallestVictory = { category: '', name: '', points: 0, margin: Infinity };
-  
+  let biggestVictory = { category: "", name: "", points: 0, margin: 0 };
+  let smallestVictory = { category: "", name: "", points: 0, margin: Infinity };
+
   Object.entries(awardsData).forEach(([category, data]) => {
     if (data.rankings.length >= 2) {
       const [first, second] = data.rankings;
       const margin = first[1].total_points - second[1].total_points;
-      
+
       if (margin > biggestVictory.margin) {
-        biggestVictory = { category, name: first[0], points: first[1].total_points, margin };
+        biggestVictory = {
+          category,
+          name: first[0],
+          points: first[1].total_points,
+          margin,
+        };
       }
-      
+
       if (margin < smallestVictory.margin) {
-        smallestVictory = { category, name: first[0], points: first[1].total_points, margin };
+        smallestVictory = {
+          category,
+          name: first[0],
+          points: first[1].total_points,
+          margin,
+        };
       }
     }
   });
 
-  let tightestTop = { category: '', margin: Infinity };
-  let loosestTop = { category: '', margin: 0 };
-  
+  let tightestTop = { category: "", margin: Infinity };
+  let loosestTop = { category: "", margin: 0 };
+
   Object.entries(awardsData).forEach(([category, data]) => {
     if (data.rankings.length >= 3) {
       const topThree = data.rankings.slice(0, 3);
       const maxPoints = topThree[0][1].total_points;
       const minPoints = topThree[2][1].total_points;
       const margin = maxPoints - minPoints;
-      
+
       if (margin < tightestTop.margin) {
         tightestTop = { category, margin };
       }
-      
+
       if (margin > loosestTop.margin) {
         loosestTop = { category, margin };
       }
@@ -104,13 +146,13 @@ function calculateStats() {
     biggestVictory,
     smallestVictory,
     tightestTop,
-    loosestTop
+    loosestTop,
   };
 }
 
 function displayStats() {
   const stats = calculateStats();
-  
+
   const statsHTML = `
     <div class="stats-container">
       <h2 class="stats-title">📊 Statistiques de la Cérémonie</h2>

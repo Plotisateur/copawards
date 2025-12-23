@@ -73,9 +73,9 @@ function showView(view) {
     ceremonyView.classList.add("hidden");
     statsView.classList.remove("hidden");
     mainHeader.classList.add("hidden");
-    
+
     statsView.innerHTML = displayStats();
-    
+
     document.getElementById("close-stats-btn").addEventListener("click", () => {
       showView("categories");
     });
