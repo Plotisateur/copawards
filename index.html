@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CopAwards 2025</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header class="main-header">
+        <h1 class="title">CopAwards 2025</h1>
+        <p class="subtitle">Cérémonie des Awards</p>
+      </header>
+
+      <div id="categories-view" class="categories-grid"></div>
+
+      <div id="ceremony-view" class="ceremony-view hidden">
+        <div class="ceremony-header">
+          <button id="back-btn" class="back-btn">← Retour</button>
+          <h2 id="category-name" class="category-title"></h2>
+        </div>
+
+        <div id="nominees-section" class="nominees-section">
+          <h3 class="section-title">Les nominés sont...</h3>
+          <div id="nominees-list" class="nominees-list"></div>
+        </div>
+
+        <div id="reveal-section" class="reveal-section hidden">
+          <div id="winner-display" class="winner-display"></div>
+        </div>
+
+        <button id="start-reveal-btn" class="start-btn">Révélation</button>
+      </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

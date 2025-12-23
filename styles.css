@@ -1,0 +1,400 @@
+:root {
+  --primary: #ffb800;
+  --secondary: #1a1a2e;
+  --accent: #16213e;
+  --text: #ffffff;
+  --text-muted: #a0a0a0;
+  --gold: #ffd700;
+  --silver: #c0c0c0;
+  --bronze: #cd7f32;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.main-header {
+  text-align: center;
+  margin-bottom: 50px;
+  padding: 40px 20px;
+}
+
+.title {
+  font-size: 5rem;
+  font-weight: 900;
+  background: linear-gradient(45deg, var(--primary), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-transform: uppercase;
+  letter-spacing: 5px;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  font-size: 1.5rem;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.category-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 184, 0, 0.3);
+  border-radius: 10px;
+  padding: 20px 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80px;
+}
+
+.category-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--primary);
+  box-shadow: 0 5px 20px rgba(255, 184, 0, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.category-card h3 {
+  font-size: 1.3rem;
+  margin: 0;
+  color: var(--primary);
+  text-align: center;
+  line-height: 1.4;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.ceremony-view {
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ceremony-header {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  margin-bottom: 50px;
+  padding: 20px;
+}
+
+.back-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--primary);
+  color: var(--text);
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.back-btn:hover {
+  background: var(--primary);
+  color: var(--secondary);
+}
+
+.category-title {
+  font-size: 2rem;
+  color: var(--primary);
+  margin: 0;
+  flex-grow: 1;
+}
+
+.category-title.small {
+  font-size: 1.5rem;
+  color: var(--text-muted);
+  font-weight: 400;
+  letter-spacing: 1px;
+}
+
+.section-title {
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 30px;
+  color: var(--text-muted);
+}
+
+.nominees-section {
+  margin-bottom: 50px;
+}
+
+.nominees-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+}
+
+.nominee-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 184, 0, 0.2);
+  border-radius: 10px;
+  padding: 20px 30px;
+  font-size: 1.3rem;
+  animation: slideIn 0.5s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.start-btn {
+  display: block;
+  margin: 30px auto;
+  background: var(--primary);
+  color: var(--secondary);
+  border: none;
+  padding: 15px 40px;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.start-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 20px rgba(255, 184, 0, 0.5);
+}
+
+.reveal-section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.reveal-section.finished {
+  position: relative;
+  min-height: auto;
+}
+
+.winner-display {
+  text-align: center;
+}
+
+.category-label {
+  font-size: 2rem;
+  color: var(--text-muted);
+  margin-bottom: 30px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  animation: fadeIn 0.8s ease;
+}
+
+.winner-rank {
+  font-size: 4rem;
+  font-weight: 900;
+  margin-bottom: 20px;
+  animation: scaleIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.winner-rank.top3 {
+  color: var(--bronze);
+  font-size: 4rem;
+}
+
+.winner-rank.top2 {
+  color: var(--silver);
+  font-size: 6rem;
+}
+
+.winner-rank.top1 {
+  color: var(--gold);
+  font-size: 10rem;
+}
+
+.winner-name {
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  animation: slideInUp 0.8s ease;
+}
+
+.winner-name.top3 {
+  font-size: 3rem;
+}
+
+.winner-name.top2 {
+  font-size: 4.5rem;
+}
+
+.winner-name.top1 {
+  font-size: 7rem;
+  background: linear-gradient(45deg, var(--gold), var(--primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.winner-stats {
+  font-size: 1.8rem;
+  color: var(--text-muted);
+  animation: fadeIn 1s ease;
+}
+
+.podium-container {
+  display: flex;
+  gap: 50px;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.podium-item {
+  flex: 1;
+  text-align: center;
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  animation: fadeIn 0.8s ease;
+}
+
+.podium-rank {
+  font-size: 2.5rem;
+  font-weight: 900;
+  margin-bottom: 15px;
+}
+
+.podium-rank.top1 {
+  color: var(--gold);
+}
+
+.podium-rank.top2 {
+  color: var(--silver);
+}
+
+.podium-rank.top3 {
+  color: var(--bronze);
+}
+
+.podium-name {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.podium-name.top1 {
+  background: linear-gradient(45deg, var(--gold), var(--primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.podium-name.top2 {
+  color: var(--silver);
+}
+
+.podium-name.top3 {
+  color: var(--bronze);
+}
+
+.podium-stats {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  margin-top: 10px;
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 3rem;
+  }
+
+  .category-title {
+    font-size: 2rem;
+  }
+
+  .winner-rank {
+    font-size: 4rem;
+  }
+
+  .winner-name {
+    font-size: 3rem;
+  }
+}
