@@ -10,10 +10,15 @@
     <div class="container">
       <header class="main-header">
         <h1 class="title">CopAwards 2025</h1>
-        <p class="subtitle">Cérémonie des Awards</p>
+        <div class="subtitle-container">
+          <p class="subtitle">Cérémonie des Awards</p>
+          <button id="stats-btn" class="stats-btn">📊 Stats</button>
+        </div>
       </header>
 
       <div id="categories-view" class="categories-grid"></div>
+
+      <div id="stats-view" class="stats-view hidden"></div>
 
       <div id="ceremony-view" class="ceremony-view hidden">
         <div class="ceremony-header">
@@ -35,6 +40,7 @@
     </div>
 
     <script src="data.js"></script>
+    <script src="stats.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

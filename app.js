@@ -10,6 +10,10 @@ function initApp() {
   document.getElementById("start-reveal-btn").addEventListener("click", () => {
     startReveal();
   });
+
+  document.getElementById("stats-btn").addEventListener("click", () => {
+    showView("stats");
+  });
 }
 
 function displayCategories() {
@@ -54,12 +58,32 @@ function openCategory(category) {
 }
 
 function showView(view) {
+  const categoriesView = document.getElementById("categories-view");
+  const ceremonyView = document.getElementById("ceremony-view");
+  const statsView = document.getElementById("stats-view");
+  const mainHeader = document.querySelector(".main-header");
+
   if (view === "categories") {
-    document.getElementById("categories-view").classList.remove("hidden");
-    document.getElementById("ceremony-view").classList.add("hidden");
+    categoriesView.classList.remove("hidden");
+    ceremonyView.classList.add("hidden");
+    statsView.classList.add("hidden");
+    mainHeader.classList.remove("hidden");
+  } else if (view === "stats") {
+    categoriesView.classList.add("hidden");
+    ceremonyView.classList.add("hidden");
+    statsView.classList.remove("hidden");
+    mainHeader.classList.add("hidden");
+    
+    statsView.innerHTML = displayStats();
+    
+    document.getElementById("close-stats-btn").addEventListener("click", () => {
+      showView("categories");
+    });
   } else {
-    document.getElementById("categories-view").classList.add("hidden");
-    document.getElementById("ceremony-view").classList.remove("hidden");
+    categoriesView.classList.add("hidden");
+    ceremonyView.classList.remove("hidden");
+    statsView.classList.add("hidden");
+    mainHeader.classList.add("hidden");
   }
 }
 
