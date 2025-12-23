@@ -83,7 +83,7 @@ function showView(view) {
     categoriesView.classList.add("hidden");
     ceremonyView.classList.remove("hidden");
     statsView.classList.add("hidden");
-    mainHeader.classList.add("hidden");
+    mainHeader.classList.remove("hidden");
   }
 }
 
