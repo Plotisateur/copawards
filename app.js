@@ -1,4 +1,25 @@
 let currentCategory = null;
+let currentNominees = [];
+let currentNomineeIndex = 0;
+let keyboardHandler = null;
+let revealMode = false;
+let currentRevealIndex = 0;
+let revealData = null;
+
+const alternativeImages = {
+  Dylan: ["Dylan.png", "Dylan_2.png"],
+};
+
+function getImagePath(name) {
+  const alternatives = alternativeImages[name];
+  if (alternatives && Math.random() < 0.2) {
+    const randomIndex = Math.floor(Math.random() * alternatives.length);
+    return `cops/${alternatives[randomIndex]}`;
+  }
+
+  const imgExt = name === "Lodu" ? "jpg" : "png";
+  return `cops/${name}.${imgExt}`;
+}
 
 function initApp() {
   displayCategories();
@@ -32,22 +53,40 @@ function displayCategories() {
 function openCategory(category) {
   currentCategory = category;
   const data = awardsData[category];
+  currentNominees = data.nominees;
+  currentNomineeIndex = 0;
 
   const categoryName = document.getElementById("category-name");
   categoryName.textContent = category;
   categoryName.classList.remove("small");
 
+  const mainHeader = document.querySelector(".main-header");
+  mainHeader.classList.add("hidden");
+
   const nomineesList = document.getElementById("nominees-list");
   nomineesList.innerHTML = "";
 
-  data.nominees.forEach((nominee, index) => {
-    setTimeout(() => {
-      const card = document.createElement("div");
-      card.className = "nominee-card";
-      card.textContent = nominee;
-      nomineesList.appendChild(card);
-    }, index * 120);
-  });
+  if (keyboardHandler) {
+    document.removeEventListener("keydown", keyboardHandler);
+  }
+
+  keyboardHandler = (e) => {
+    if (e.key === "ArrowRight" || e.key === " ") {
+      e.preventDefault();
+      if (revealMode) {
+        showNextReveal();
+      } else {
+        showNextNominee();
+      }
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (!revealMode && currentNomineeIndex >= currentNominees.length) {
+        startReveal();
+      }
+    }
+  };
+
+  document.addEventListener("keydown", keyboardHandler);
 
   document.getElementById("reveal-section").classList.add("hidden");
   document.getElementById("reveal-section").classList.remove("finished");
@@ -55,6 +94,30 @@ function openCategory(category) {
   document.getElementById("nominees-section").classList.remove("hidden");
 
   showView("ceremony");
+}
+
+function showNextNominee() {
+  if (currentNomineeIndex >= currentNominees.length) {
+    return;
+  }
+
+  const nominee = currentNominees[currentNomineeIndex];
+  const nomineesList = document.getElementById("nominees-list");
+
+  const card = document.createElement("div");
+  card.className = "nominee-card";
+
+  const imgPath = getImagePath(nominee);
+
+  card.innerHTML = `
+    <div class="nominee-image-container">
+      <img src="${imgPath}" alt="${nominee}" class="nominee-image">
+    </div>
+    <div class="nominee-name">${nominee}</div>
+  `;
+  nomineesList.appendChild(card);
+
+  currentNomineeIndex++;
 }
 
 function showView(view) {
@@ -68,6 +131,11 @@ function showView(view) {
     ceremonyView.classList.add("hidden");
     statsView.classList.add("hidden");
     mainHeader.classList.remove("hidden");
+    
+    if (keyboardHandler) {
+      document.removeEventListener("keydown", keyboardHandler);
+      keyboardHandler = null;
+    }
   } else if (view === "stats") {
     categoriesView.classList.add("hidden");
     ceremonyView.classList.add("hidden");
@@ -83,12 +151,21 @@ function showView(view) {
     categoriesView.classList.add("hidden");
     ceremonyView.classList.remove("hidden");
     statsView.classList.add("hidden");
-    mainHeader.classList.remove("hidden");
+    mainHeader.classList.add("hidden");
   }
 }
 
 async function startReveal() {
+  if (keyboardHandler) {
+    document.removeEventListener("keydown", keyboardHandler);
+    keyboardHandler = null;
+  }
+
+  revealMode = true;
+  currentRevealIndex = 0;
+
   const ceremonyView = document.getElementById("ceremony-view");
+  const ceremonyHeader = document.querySelector(".ceremony-header-fixed");
   const backBtn = document.getElementById("back-btn");
   const categoryName = document.getElementById("category-name");
   const startBtn = document.getElementById("start-reveal-btn");
@@ -113,58 +190,95 @@ async function startReveal() {
   const data = awardsData[currentCategory];
   const rankings = data.rankings;
 
-  const positions = [
-    { rank: "TOP 3", class: "top3", delay: 2000 },
-    { rank: "TOP 2", class: "top2", delay: 2500 },
-    { rank: "TOP 1", class: "top1", delay: 3000 },
-  ];
+  revealData = {
+    rankings: rankings,
+    positions: [
+      { rank: "TOP 3", class: "top3", index: Math.min(2, rankings.length - 1) },
+      { rank: "TOP 2", class: "top2", index: 1 },
+      { rank: "TOP 1", class: "top1", index: 0 },
+    ],
+    ceremonyView,
+    backBtn,
+    categoryName,
+    revealSection
+  };
 
-  for (let i = Math.min(2, rankings.length - 1); i >= 0; i--) {
-    const position = positions[2 - i];
-    const [name, stats] = rankings[i];
+  keyboardHandler = (e) => {
+    if (e.key === "ArrowRight" || e.key === " ") {
+      e.preventDefault();
+      showNextReveal();
+    }
+  };
 
-    await revealWinner(position.rank, name, stats, position.class);
-    await sleep(position.delay);
+  document.addEventListener("keydown", keyboardHandler);
+
+  showNextReveal();
+}
+
+function showNextReveal() {
+  if (!revealData || currentRevealIndex >= revealData.positions.length) {
+    if (currentRevealIndex === revealData.positions.length) {
+      finishReveal();
+    }
+    return;
   }
 
-  displayPodium(rankings);
+  const position = revealData.positions[currentRevealIndex];
+  const [name, stats] = revealData.rankings[position.index];
 
-  backBtn.classList.remove("hidden");
-  categoryName.classList.remove("hidden");
-  categoryName.classList.add("small");
-  revealSection.classList.add("finished");
-  ceremonyView.style.position = "";
-  ceremonyView.style.top = "";
-  ceremonyView.style.left = "";
-  ceremonyView.style.right = "";
-  ceremonyView.style.bottom = "";
-  ceremonyView.style.zIndex = "";
-  ceremonyView.style.background = "";
+  revealWinner(position.rank, name, stats, position.class);
+
+  currentRevealIndex++;
+}
+
+function finishReveal() {
+  displayPodium(revealData.rankings);
+
+  revealData.backBtn.classList.remove("hidden");
+  revealData.categoryName.classList.remove("hidden");
+  revealData.categoryName.classList.add("small");
+  revealData.revealSection.classList.add("finished");
+  revealData.ceremonyView.style.position = "";
+  revealData.ceremonyView.style.top = "";
+  revealData.ceremonyView.style.left = "";
+  revealData.ceremonyView.style.right = "";
+  revealData.ceremonyView.style.bottom = "";
+  revealData.ceremonyView.style.zIndex = "";
+  revealData.ceremonyView.style.background = "";
+
+  revealMode = false;
+  revealData = null;
+
+  if (keyboardHandler) {
+    document.removeEventListener("keydown", keyboardHandler);
+    keyboardHandler = null;
+  }
 }
 
 function revealWinner(rank, name, stats, className) {
-  return new Promise((resolve) => {
-    const display = document.getElementById("winner-display");
-    display.innerHTML = `
-            <div class="category-label">${currentCategory}</div>
-            <div class="winner-rank ${className}">${rank}</div>
-            <div class="winner-name ${className}">${name}</div>
-            <div class="winner-stats">
-                ${stats.total_points} points
-                <br>
-                (Top 1: ${stats["Top 1"]} • Top 2: ${stats["Top 2"]} • Top 3: ${stats["Top 3"]})
-            </div>
-        `;
+  const display = document.getElementById("winner-display");
+  const imgPath = getImagePath(name);
 
-    setTimeout(resolve, 1000);
-  });
+  display.innerHTML = `
+          <div class="category-label">${currentCategory}</div>
+          <div class="winner-rank ${className}">${rank}</div>
+          <div class="winner-image-container ${className}">
+            <img src="${imgPath}" alt="${name}" class="winner-image">
+          </div>
+          <div class="winner-name ${className}">${name}</div>
+          <div class="winner-stats">
+              ${stats.total_points} points
+              <br>
+              (Top 1: ${stats["Top 1"]} • Top 2: ${stats["Top 2"]} • Top 3: ${stats["Top 3"]})
+          </div>
+      `;
 }
 
 function displayPodium(rankings) {
   const display = document.getElementById("winner-display");
   const top3 = rankings.slice(0, 3);
 
-  let podiumHTML = '<div class="podium-container">';
+  let podiumHTML = '<div class="podium-title">🏆 Podium 🏆</div><div class="podium-container">';
 
   top3.forEach((ranking, index) => {
     const [name, stats] = ranking;
@@ -172,10 +286,14 @@ function displayPodium(rankings) {
     const ranks = ["TOP 1", "TOP 2", "TOP 3"];
     const className = classes[index];
     const rank = ranks[index];
+    const imgPath = getImagePath(name);
 
     podiumHTML += `
       <div class="podium-item">
         <div class="podium-rank ${className}">${rank}</div>
+        <div class="podium-image-container">
+          <img src="${imgPath}" alt="${name}" class="podium-image">
+        </div>
         <div class="podium-name ${className}">${name}</div>
         <div class="podium-stats">
           ${stats.total_points} points

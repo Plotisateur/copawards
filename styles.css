@@ -208,12 +208,22 @@ body {
   }
 }
 
-.ceremony-header {
+.ceremony-header-fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   display: flex;
   align-items: center;
   gap: 30px;
-  margin-bottom: 50px;
-  padding: 20px;
+  padding: 15px 20px;
+  background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+  z-index: 100;
+  border-bottom: 2px solid rgba(255, 184, 0, 0.3);
+}
+
+.ceremony-view {
+  padding-top: 70px;
 }
 
 .back-btn {
@@ -233,6 +243,24 @@ body {
   color: var(--secondary);
 }
 
+.reveal-btn {
+  background: var(--primary);
+  color: var(--secondary);
+  border: none;
+  padding: 10px 25px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.reveal-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 20px rgba(255, 184, 0, 0.5);
+}
+
 .category-title {
   font-size: 2rem;
   color: var(--primary);
@@ -248,31 +276,64 @@ body {
 }
 
 .section-title {
-  font-size: 2rem;
+  font-size: 1.5rem;
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
+  margin-top: 10px;
   color: var(--text-muted);
 }
 
 .nominees-section {
-  margin-bottom: 50px;
+  margin-bottom: 30px;
+  padding-top: 0;
 }
 
 .nominees-list {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 20px;
+  gap: 10px;
   padding: 20px;
+  max-width: 100%;
 }
 
 .nominee-card {
   background: rgba(255, 255, 255, 0.05);
   border: 2px solid rgba(255, 184, 0, 0.2);
   border-radius: 10px;
-  padding: 20px 30px;
-  font-size: 1.3rem;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
   animation: slideIn 0.5s ease;
+  width: 160px;
+  flex-shrink: 0;
+}
+
+.nominee-image-container {
+  width: 100%;
+  aspect-ratio: 3 / 5;
+  overflow: hidden;
+  border-radius: 8px;
+  border: 2px solid rgba(255, 184, 0, 0.3);
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nominee-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.nominee-name {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--primary);
+  text-align: center;
 }
 
 @keyframes slideIn {
@@ -284,27 +345,6 @@ body {
     opacity: 1;
     transform: translateX(0);
   }
-}
-
-.start-btn {
-  display: block;
-  margin: 30px auto;
-  background: var(--primary);
-  color: var(--secondary);
-  border: none;
-  padding: 15px 40px;
-  border-radius: 8px;
-  font-size: 1.2rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-}
-
-.start-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 5px 20px rgba(255, 184, 0, 0.5);
 }
 
 .reveal-section {
@@ -329,11 +369,11 @@ body {
 }
 
 .category-label {
-  font-size: 2rem;
+  font-size: 1.5rem;
   color: var(--text-muted);
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   text-transform: uppercase;
-  letter-spacing: 3px;
+  letter-spacing: 2px;
   animation: fadeIn 0.8s ease;
 }
 
@@ -346,36 +386,72 @@ body {
 
 .winner-rank.top3 {
   color: var(--bronze);
-  font-size: 4rem;
+  font-size: 3rem;
 }
 
 .winner-rank.top2 {
   color: var(--silver);
-  font-size: 6rem;
+  font-size: 4rem;
 }
 
 .winner-rank.top1 {
   color: var(--gold);
-  font-size: 10rem;
+  font-size: 6rem;
+}
+
+.winner-image-container {
+  max-height: 38vh;
+  aspect-ratio: 3 / 4;
+  margin: 0 auto 30px;
+  border-radius: 15px;
+  overflow: hidden;
+  border: 4px solid var(--gold);
+  animation: scaleIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.winner-image-container.top3 {
+  max-height: 32vh;
+  border-color: var(--bronze);
+}
+
+.winner-image-container.top2 {
+  max-height: 35vh;
+  border-color: var(--silver);
+}
+
+.winner-image-container.top1 {
+  max-height: 38vh;
+  border-color: var(--gold);
+  border-width: 6px;
+}
+
+.winner-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .winner-name {
-  font-size: 3rem;
+  font-size: 2.5rem;
   font-weight: bold;
   margin-bottom: 20px;
   animation: slideInUp 0.8s ease;
 }
 
 .winner-name.top3 {
-  font-size: 3rem;
+  font-size: 2.5rem;
 }
 
 .winner-name.top2 {
-  font-size: 4.5rem;
+  font-size: 3rem;
 }
 
 .winner-name.top1 {
-  font-size: 7rem;
+  font-size: 4rem;
   background: linear-gradient(45deg, var(--gold), var(--primary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -386,6 +462,18 @@ body {
   font-size: 1.8rem;
   color: var(--text-muted);
   animation: fadeIn 1s ease;
+}
+
+.podium-title {
+  font-size: 3rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 40px;
+  background: linear-gradient(45deg, var(--gold), var(--primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: fadeIn 0.8s ease;
 }
 
 .podium-container {
@@ -425,6 +513,25 @@ body {
 
 .podium-rank.top3 {
   color: var(--bronze);
+}
+
+.podium-image-container {
+  max-height: 25vh;
+  aspect-ratio: 3 / 4;
+  margin: 0 auto 20px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 3px solid rgba(255, 184, 0, 0.5);
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.podium-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .podium-name {
@@ -490,8 +597,20 @@ body {
     font-size: 3rem;
   }
 
+  .ceremony-header-fixed {
+    padding: 10px 15px;
+  }
+
+  .ceremony-view {
+    padding-top: 70px;
+  }
+
   .category-title {
-    font-size: 2rem;
+    font-size: 1.5rem;
+  }
+
+  .section-title {
+    font-size: 1.2rem;
   }
 
   .winner-rank {
@@ -500,6 +619,22 @@ body {
 
   .winner-name {
     font-size: 3rem;
+  }
+
+  .winner-image-container {
+    max-height: 32vh !important;
+  }
+
+  .winner-image-container.top1 {
+    max-height: 35vh !important;
+  }
+
+  .nominee-card {
+    width: 140px;
+  }
+
+  .nominee-name {
+    font-size: 0.9rem;
   }
 
   .podium-container {
@@ -522,6 +657,10 @@ body {
 
   .podium-stats {
     font-size: 1rem;
+  }
+
+  .podium-image-container {
+    max-height: 20vh;
   }
 
   .categories-grid {
