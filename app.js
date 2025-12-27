@@ -41,7 +41,14 @@ function displayCategories() {
   const grid = document.getElementById("categories-view");
   grid.innerHTML = "";
 
-  Object.keys(awardsData).forEach((category) => {
+  const categories = Object.keys(awardsData);
+  categories.sort((a, b) => {
+    if (a === "Vmax") return -1;
+    if (b === "Vmax") return 1;
+    return 0;
+  });
+
+  categories.forEach((category) => {
     const card = document.createElement("div");
     card.className = "category-card";
     card.innerHTML = `<h3>${category}</h3>`;
@@ -131,7 +138,7 @@ function showView(view) {
     ceremonyView.classList.add("hidden");
     statsView.classList.add("hidden");
     mainHeader.classList.remove("hidden");
-    
+
     if (keyboardHandler) {
       document.removeEventListener("keydown", keyboardHandler);
       keyboardHandler = null;
@@ -200,7 +207,7 @@ async function startReveal() {
     ceremonyView,
     backBtn,
     categoryName,
-    revealSection
+    revealSection,
   };
 
   keyboardHandler = (e) => {
@@ -278,7 +285,8 @@ function displayPodium(rankings) {
   const display = document.getElementById("winner-display");
   const top3 = rankings.slice(0, 3);
 
-  let podiumHTML = '<div class="podium-title">🏆 Podium 🏆</div><div class="podium-container">';
+  let podiumHTML =
+    '<div class="podium-title">🏆 Podium 🏆</div><div class="podium-container">';
 
   top3.forEach((ranking, index) => {
     const [name, stats] = ranking;
