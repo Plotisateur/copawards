@@ -23,9 +23,12 @@ function getImagePath(name) {
 
 function initApp() {
   displayCategories();
+  
+  // Afficher le mode podium par défaut
+  showView("podium");
 
   document.getElementById("back-btn").addEventListener("click", () => {
-    showView("categories");
+    showView("podium");
   });
 
   document.getElementById("start-reveal-btn").addEventListener("click", () => {
@@ -34,6 +37,10 @@ function initApp() {
 
   document.getElementById("stats-btn").addEventListener("click", () => {
     showView("stats");
+  });
+
+  document.getElementById("podium-mode-btn").addEventListener("click", () => {
+    showView("podium");
   });
 }
 
@@ -131,12 +138,14 @@ function showView(view) {
   const categoriesView = document.getElementById("categories-view");
   const ceremonyView = document.getElementById("ceremony-view");
   const statsView = document.getElementById("stats-view");
+  const podiumView = document.getElementById("podium-view");
   const mainHeader = document.querySelector(".main-header");
 
   if (view === "categories") {
     categoriesView.classList.remove("hidden");
     ceremonyView.classList.add("hidden");
     statsView.classList.add("hidden");
+    podiumView.classList.add("hidden");
     mainHeader.classList.remove("hidden");
 
     if (keyboardHandler) {
@@ -147,6 +156,7 @@ function showView(view) {
     categoriesView.classList.add("hidden");
     ceremonyView.classList.add("hidden");
     statsView.classList.remove("hidden");
+    podiumView.classList.add("hidden");
     mainHeader.classList.add("hidden");
 
     statsView.innerHTML = displayStats();
@@ -154,10 +164,19 @@ function showView(view) {
     document.getElementById("close-stats-btn").addEventListener("click", () => {
       showView("categories");
     });
+  } else if (view === "podium") {
+    categoriesView.classList.add("hidden");
+    ceremonyView.classList.add("hidden");
+    statsView.classList.add("hidden");
+    podiumView.classList.remove("hidden");
+    mainHeader.classList.add("hidden");
+
+    displayPodiumMode();
   } else {
     categoriesView.classList.add("hidden");
     ceremonyView.classList.remove("hidden");
     statsView.classList.add("hidden");
+    podiumView.classList.add("hidden");
     mainHeader.classList.add("hidden");
   }
 }
@@ -318,6 +337,118 @@ function displayPodium(rankings) {
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function displayPodiumMode() {
+  const podiumView = document.getElementById("podium-view");
+  
+  const categories = Object.keys(awardsData);
+  categories.sort((a, b) => {
+    if (a === "Vmax") return -1;
+    if (b === "Vmax") return 1;
+    return 0;
+  });
+
+  // Créer le fil d'Ariane
+  let breadcrumbHtml = '<nav class="breadcrumb-nav"><div class="breadcrumb-container">';
+  categories.forEach((category) => {
+    const categoryId = category.replace(/\s+/g, '-').toLowerCase();
+    breadcrumbHtml += `<a href="#${categoryId}" class="breadcrumb-item">${category}</a>`;
+  });
+  breadcrumbHtml += '</div></nav>';
+
+  let html = `
+    <div class="podium-mode-header">
+      <h2 class="podium-mode-title">🏆 Tous les Podiums 🏆</h2>
+    </div>
+    ${breadcrumbHtml}
+    <div class="podium-mode-container">
+  `;
+
+  categories.forEach((category) => {
+    const data = awardsData[category];
+    const nominees = data.nominees;
+    const rankings = data.rankings;
+    const top3 = rankings.slice(0, 3);
+    const categoryId = category.replace(/\s+/g, '-').toLowerCase();
+
+    html += `
+      <div id="${categoryId}" class="podium-mode-category">
+        <h3 class="podium-mode-category-title">${category}</h3>
+        
+        <div class="podium-mode-nominees">
+          <h4 class="podium-mode-section-title">Nominés</h4>
+          <div class="podium-mode-nominees-list">
+    `;
+
+    nominees.forEach((nominee) => {
+      const imgPath = getImagePath(nominee);
+      html += `
+        <div class="podium-mode-nominee-card">
+          <img src="${imgPath}" alt="${nominee}" class="podium-mode-nominee-image">
+          <div class="podium-mode-nominee-name">${nominee}</div>
+        </div>
+      `;
+    });
+
+    html += `
+          </div>
+        </div>
+        
+        <div class="podium-mode-podium">
+          <h4 class="podium-mode-section-title">Podium</h4>
+          <div class="podium-mode-winners">
+    `;
+
+    top3.forEach((ranking, index) => {
+      const [name, stats] = ranking;
+      const classes = ["podium-gold", "podium-silver", "podium-bronze"];
+      const medals = ["🥇", "🥈", "🥉"];
+      const className = classes[index];
+      const medal = medals[index];
+      const imgPath = getImagePath(name);
+
+      html += `
+        <div class="podium-mode-winner ${className}">
+          <div class="podium-mode-medal">${medal}</div>
+          <img src="${imgPath}" alt="${name}" class="podium-mode-winner-image">
+          <div class="podium-mode-winner-name">${name}</div>
+          <div class="podium-mode-winner-stats">
+            ${stats.total_points} pts
+            <br>
+            <span class="podium-mode-stats-detail">T1: ${stats["Top 1"]} • T2: ${stats["Top 2"]} • T3: ${stats["Top 3"]}</span>
+          </div>
+        </div>
+      `;
+    });
+
+    html += `
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  html += `
+    </div>
+  `;
+
+  podiumView.innerHTML = html;
+
+  // Smooth scroll pour les liens du fil d'Ariane
+  document.querySelectorAll(".breadcrumb-item").forEach(link => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      const targetId = link.getAttribute("href").substring(1);
+      const targetElement = document.getElementById(targetId);
+      if (targetElement) {
+        targetElement.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+      }
+    });
+  });
 }
 
 document.addEventListener("DOMContentLoaded", initApp);

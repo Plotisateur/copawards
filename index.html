@@ -8,17 +8,20 @@
   </head>
   <body>
     <div class="container">
-      <header class="main-header">
+      <header class="main-header hidden">
         <h1 class="title">CopAwards 2025</h1>
         <div class="subtitle-container">
           <p class="subtitle">Cérémonie des Awards</p>
           <button id="stats-btn" class="stats-btn">📊 Stats</button>
+          <button id="podium-mode-btn" class="podium-mode-btn">🏆 Mode Podium</button>
         </div>
       </header>
 
-      <div id="categories-view" class="categories-grid"></div>
+      <div id="categories-view" class="categories-grid hidden"></div>
 
       <div id="stats-view" class="stats-view hidden"></div>
+
+      <div id="podium-view" class="podium-view"></div>
 
       <div id="ceremony-view" class="ceremony-view hidden">
         <div class="ceremony-header-fixed">
